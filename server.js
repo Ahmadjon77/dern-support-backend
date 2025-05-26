@@ -12,11 +12,15 @@ const PORT = 3000;
 const JWT_SECRET = "dern-support-secret-key-2025";
 
 // MongoDB bilan ulanish
-mongoose.connect('mongodb://localhost:27017/dern-support', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log('MongoDB ga ulanish muvaffaqiyatli!'))
-  .catch(err => console.error('MongoDB ulanishda xato:', err));
+
+then(() => console.log('MongoDB ga ulanish muvaffaqiyatli!'))
+.catch(err => console.error('MongoDB ulanishda xato:', err));
+
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://username:password@cluster0.mongodb.net/database?retryWrites=true&w=majority')
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
 // MongoDB shemalari
 const UserSchema = new mongoose.Schema({
