@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dern Support</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <span class="logo-text">Dern Support</span>
+                    </a>
+                    <div class="admin-nav">
+                        <span class="admin-badge">Admin Panel</span>
+                        <div class="user-menu">
+                            <div class="user-info">
+                                <i class="fas fa-user-shield"></i>
+                                <span id="adminName"></span>
+                            </div>
+                            <button class="btn btn-outline" onclick="logout()">Chiqish</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="container">
+                <div class="admin-welcome">
+                    <h1>Admin Panel</h1>
+                    <p>Tizimni boshqarish va nazorat qilish</p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalOrdersCount">0</h3>
+                            <p>Jami buyurtmalar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsersCount">0</h3>
+                            <p>Foydalanuvchilar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalMastersCount">0</h3>
+                            <p>Masterlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRevenue">0</h3>
+                            <p>Daromad (so'm)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admin Tabs -->
+                <div class="admin-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="showAdminTab('orders')">Buyurtmalar</button>
+                        <button class="tab-btn" onclick="showAdminTab('users')">Foydalanuvchilar</button>
+                        <button class="tab-btn" onclick="showAdminTab('masters')">Masterlar</button>
+                        <button class="tab-btn" onclick="showAdminTab('products')">Mahsulotlar</button>
+                    </div>
+                    
+                    <!-- Orders Tab -->
+                    <div id="orders-admin-tab" class="tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Barcha buyurtmalar</h2>
+                                <p>Tizimda mavjud barcha buyurtmalarni boshqaring</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-controls">
+                                    <div class="search-box">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" id="orderSearch" placeholder="Buyurtma qidirish...">
+                                    </div>
+                                    <select id="orderStatusFilter">
+                                        <option value="">Barcha holatlar</option>
+                                        <option value="pending">Kutilmoqda</option>
+                                        <option value="in-progress">Jarayonda</option>
+                                        <option value="completed">Tugallangan</option>
+                                        <option value="cancelled">Bekor qilingan</option>
+                                    </select>
+                                </div>
+                                <div id="admin-orders-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Users Tab -->
+                    <div id="users-admin-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Foydalanuvchilar</h2>
+                                <p>Ro'yxatdan o'tgan foydalanuvchilarni boshqaring</p>
+                            </div>
+                            <div class="card-content">
+                                <div id="admin-users-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="masters-admin-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Masterlar</h2>
+                                <p>Tizimda ishlayotgan masterlarni boshqaring</p>
+                                <button class="btn btn-primary" onclick="showAddMasterModal()">
+                                    <i class="fas fa-plus"></i>
+                                    Yangi master qo'shish
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div id="admin-masters-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Master qo‘shish modali -->
+                    <div id="addMasterModal" class="modal" style="display:none;">
+                      <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <h2>Yangi Master Qo‘shish</h2>
+                        <form id="addMasterForm">
+                          <div class="form-group">
+                            <label for="masterFullName">Ism:</label>
+                            <input type="text" id="masterFullName" placeholder="Ism" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="masterEmail">Email:</label>
+                            <input type="email" id="masterEmail" placeholder="Email" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="masterPhone">Telefon:</label>
+                            <input type="text" id="masterPhone" placeholder="Telefon" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="masterSpecialization">Mutaxassislik:</label>
+                            <input type="text" id="masterSpecialization" placeholder="Mutaxassislik" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Qo‘shish</button>
+                          <button type="button" class="btn btn-secondary" onclick="closeModal()">Chiqish</button>
+                        </form>
+                      </div>
+                    </div>
+                    
+                    <!-- "Masters" tabi -->
+                    <div id="masters-admin-tab" class="tab-content">
+                      <div class="tab-header">
+                        <h2>Masterlar</h2>
+                        <button class="btn btn-primary" onclick="showAddMasterModal()">+ Yangi master qo‘shish</button>
+                      </div>
+                      <div id="admin-masters-list"></div>
+                    </div>
+                    <!-- Products Tab -->
+                    <div id="products-admin-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Mahsulotlar</h2>
+                                <p>Tizimdagi mahsulotlarni boshqaring</p>
+                                <button class="btn btn-primary" id="addProductBtn" onclick="showAddProductModal()">
+                                    <i class="fas fa-plus"></i>
+                                    Yangi mahsulot qo'shish
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div id="admin-products-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Tab -->
+                    <div id="settings-admin-tab" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Tizim sozlamalari</h2>
+                                <p>Umumiy tizim sozlamalarini boshqaring</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="settings-grid">
+                                    <div class="setting-item">
+                                        <h3>Xizmat narxlari</h3>
+                                        <p>Har bir xizmat turi uchun narxlarni belgilang</p>
+                                        <button class="btn btn-outline" onclick="checkServerStatus()">Narxlarni sozlash</button>
+                                    </div>
+                                    <div class="setting-item">
+                                        <h3>Email sozlamalari</h3>
+                                        <p>Email xabarnomalar uchun sozlamalar</p>
+                                        <button class="btn btn-outline" onclick="manageFiles()">Email sozlash</button>
+                                    </div>
+                                    <div class="setting-item">
+                                        <h3>Ma'lumotlar bazasi</h3>
+                                        <p>Ma'lumotlar bazasini tozalash va zaxiralash</p>
+                                        <button class="btn btn-outline" onclick="showDatabaseStats()">Boshqarish</button>
+                                    </div>
+                                    <div class="setting-item">
+                                        <h3>Hisobotlar</h3>
+                                        <p>Tizim hisobotlarini ko'rish va yuklab olish</p>
+                                        <button class="btn btn-outline" onclick="generateReports()">Hisobotlar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yangi mahsulot qo'shish</h2>
+                <button class="modal-close" onclick="hideAddProductModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Nomi</label>
+                            <input type="text" id="productName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Narxi</label>
+                            <input type="number" id="productPrice" name="price" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCategory">Kategoriya</label>
+                            <select id="productCategory" name="category" required>
+                                <option value="">Kategoriyani tanlang</option>
+                                <option value="hardware">Apparat</option>
+                                <option value="software">Dasturiy ta'minot</option>
+                                <option value="accessory">Aksessuar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock">Zaxira</label>
+                            <input type="number" id="productStock" name="stock" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Tavsif</label>
+                        <textarea id="productDescription" name="description"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="hideAddProductModal()">Bekor qilish</button>
+                        <button type="submit" class="btn btn-primary">Qo'shish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+
+
+
+
+
+
+
+    
+    <!-- Add Master Modal -->
+     <!-- Masterlar Tab -->
+<div id="masterlar-tab" class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h2>Masterlar</h2>
+            <p>Tizimdagi barcha masterlarni boshqaring</p>
+            <button class="btn btn-primary" onclick="showAddMasterModal()">Yangi master qo‘shish</button>
+        </div>
+        <div class="card-content">
+            <div id="all-masters-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Master Modal -->
+<div id="addMasterModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Yangi master qo‘shish</h2>
+        <form id="addMasterForm">
+            <div class="form-group">
+                <label for="masterFullName">Ism va Familiya</label>
+                <input type="text" id="masterFullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="masterEmail">Email</label>
+                <input type="email" id="masterEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="masterPhone">Telefon</label>
+                <input type="tel" id="masterPhone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="masterSpecialization">Mutaxassislik</label>
+                <select id="masterSpecialization" name="specialization" required>
+                    <option value="hardware">Apparat ta'mirlash</option>
+                    <option value="software">Dasturiy ta'minot</option>
+                    <option value="network">Tarmoq</option>
+                    <option value="general">Umumiy</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Qo‘shish</button>
+        </form>
+    </div>
+</div>
+    <div id="addMasterModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yangi master qo'shish</h2>
+                <button class="modal-close" onclick="hideAddMasterModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addMasterForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="masterFirstName">Ism</label>
+                            <input type="text" id="masterFirstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="masterLastName">Familiya</label>
+                            <input type="text" id="masterLastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="masterEmail">Email</label>
+                            <input type="email" id="masterEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="masterPhone">Telefon</label>
+                            <input type="tel" id="masterPhone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="masterSpecialty">Mutaxassislik</label>
+                        <select id="masterSpecialty" name="specialty" required>
+                            <option value="">Mutaxassislikni tanlang</option>
+                            <option value="hardware">Apparat ta'mirlash</option>
+                            <option value="software">Dasturiy ta'minot</option>
+                            <option value="network">Tarmoq</option>
+                            <option value="general">Umumiy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="masterPassword">Parol</label>
+                        <input type="password" id="masterPassword" name="password" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="hideAddMasterModal()">Bekor qilish</button>
+                        <button type="submit" class="btn btn-primary">Master qo'shish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="api-helper.js"></script>
+    <script src="admin.js"></script>
+    <script src="frontend-integration.js"></script>
+</body>
+</html>
