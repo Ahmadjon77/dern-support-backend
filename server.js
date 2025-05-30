@@ -10,6 +10,21 @@ import mongoose from "mongoose";
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = "dern-support-secret-key-2025";
+// middleware/verifyToken.js
+
+export function verifyToken(req, res, next) {
+  // ⚠️ Vaqtinchalik tokenni tekshirishni o'chirib qo'yamiz
+  // Har kim kiraveradi
+  req.user = { role: "temp" }; // yoki kerakli rol
+  next();
+}
+export function requireRole(role) {
+  return function (req, res, next) {
+    // ⚠️ Vaqtinchalik ruxsat beramiz
+    req.user = { role }; // Admin, master, user sifatida kiritiladi
+    next();
+  };
+}
 
 // MongoDB ga ulanish (Vercel uchun muhit o'zgaruvchisi orqali)
 mongoose.connect(process.env.MONGO_URI, { // <-- Mana bu yerda MONGO_URI ishlatiladi
